@@ -15,13 +15,13 @@ use Illuminate\Http\Request;
 
 Route::group(["middleware" => "api"], function () {
     Route::post('/login', 'Auth\LoginController@login');
+    Route::post('/register', 'Auth\RegisterController@register');
    // Route::post('/logout', 'Auth\LoginController@loggedOut');
     Route::get('/current_user', function () {
         return Auth::user();
     });
     Route::apiResource('/users', 'Api\UserController');
-    Route::group(['middleware' => ['auth:api']], function () {
-        //ここに認証が必要なパスを書いていく
-//        /Route::apiResource('/users', 'Api\UserController')->except(['show']);
+    Route::post('/logout', 'Auth\LoginController@logout')->name('logout');
+    Route::middleware('auth:api')->group(function() {
     });
 });
