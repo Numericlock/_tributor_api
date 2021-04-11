@@ -32,14 +32,14 @@ class ListsController extends Controller
         //$base64_image = base64_encode($image);
         //Log::debug("画像：".public_path());
         //Log::debug("画像：".$base64_image);
-        foreach($lists as $list){
-            Log::debug("画像：".$list['id']);
-            $image = File::get(public_path().'/img/list_icon/'. $list['id'] .'.png');
-            $base64_image = base64_encode($image);
-            //Log::debug("画像：".public_path());
-            //Log::debug("画像：".$base64_image);
-            $list['icon'] = $base64_image;
-        }
+//        /foreach($lists as $list){
+//        /    //Log::debug("画像：".$list['id']);
+//        /    $image = File::get(public_path().'/img/list_icon/'. $list['id'] .'.png');
+//        /    $base64_image = base64_encode($image);
+//        /    //Log::debug("画像：".public_path());
+//        /    //Log::debug("画像：".$base64_image);
+//        /    $list['icon'] = $base64_image;
+//        /}
         return $lists;
 	}
 
