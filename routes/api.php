@@ -18,6 +18,7 @@ Route::group(["middleware" => "api"], function () {
     Route::post('/register', 'Auth\RegisterController@register');
    // Route::post('/logout', 'Auth\LoginController@loggedOut');
     Route::get('/home', 'Api\HomeController@home');
+    Route::post('/home/before', 'Api\HomeController@get_before_posts');
     Route::get('/lists', 'Api\ListsController@index');
     Route::get('/current_user', function () {
         return Auth::user();

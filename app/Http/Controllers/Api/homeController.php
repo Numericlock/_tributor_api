@@ -49,6 +49,8 @@ class HomeController extends Controller
 		$last_post = $posts->last();
 		///$posts = $posts->sortByDesc('created_at');
         $userIds = $posts->unique('users_id'); 
+        $json = $posts->toJson();
+        Log::debug($json."JSONJSON");
        // $users = [];
       //  function test($id){
       //      $image = file_get_contents(public_path().'/img/icon_img/'. $id . '.png');
@@ -75,7 +77,20 @@ class HomeController extends Controller
 		//$lists = $request->base_user_lists;
         
 		//return compact('posts', 'start_post', 'last_post', 'userIds', 'user','lists');
-		return compact('posts', 'start_post', 'last_post', 'userIds');
+		//return compact('posts', 'start_post', 'last_post', 'userIds');
+        return response()->json(['posts' => $posts,'start_post' => $start_post, 'last_post' => $last_post, 'userIds' => $userIds]);
         //return $posts;
+	}
+	public function get_before_posts (Request $request){
+		$user_id = "hishida1";
+		$posts = UsersPosts::ofPosts($user_id)->having('post_at', '<', $request->num)->orderBy('post_at', 'desc')->offset(0)->limit(25)->get();
+		
+		$posts = $posts->unique('posts_id');
+		$start_post = $posts->first();
+		$last_post = $posts->last();
+        $userIds = $posts->unique('users_id'); 
+		Log::debug($posts."ごみんわどぁｗｗｗｗ");
+        //return compact('posts', 'start_post', 'last_post', 'userIds');
+        return response()->json(['posts' => $posts,'start_post' => $start_post, 'last_post' => $last_post, 'userIds' => $userIds]);
 	}
 }
