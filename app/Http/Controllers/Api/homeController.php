@@ -49,8 +49,6 @@ class HomeController extends Controller
 		$last_post = $posts->last();
 		///$posts = $posts->sortByDesc('created_at');
         $userIds = $posts->unique('users_id'); 
-        $json = $posts->toJson();
-        Log::debug($json."JSONJSON");
        // $users = [];
       //  function test($id){
       //      $image = file_get_contents(public_path().'/img/icon_img/'. $id . '.png');

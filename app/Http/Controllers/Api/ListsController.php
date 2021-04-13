@@ -63,7 +63,7 @@ class ListsController extends Controller
 //まだ文字列の状態なので、画像リソース化
         $image = imagecreatefromstring($canvas);
  
-//画像として保存（ディレクトリは任意）
+        //画像として保存（ディレクトリは任意）
         $savepath=$id;
         $path2 ='img/list_icon/';
         $path2 .=$savepath;
