@@ -21,6 +21,7 @@ Route::group(["middleware" => "api"], function () {
     Route::post('/home/before', 'Api\HomeController@get_before_posts');
     Route::get('/lists', 'Api\ListsController@index');
     Route::post('/lists', 'Api\ListsController@lists_insert');
+    Route::post('/post', 'Api\PostController@post');
     Route::get('/current_user', function () {
         return Auth::user();
     });
