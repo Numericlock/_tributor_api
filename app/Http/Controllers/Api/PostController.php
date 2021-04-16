@@ -34,8 +34,6 @@ class PostController extends Controller
 		$id = $post->id;
         if($request->lists){
             foreach($request->lists as $list){
-                Log::debug($list);
-                Log::debug($id);
                 Post_valid_disclosure_list::create([
                     'list_id'=> $list,
                     'post_id'=> $id,
@@ -73,9 +71,7 @@ class PostController extends Controller
 
             }
         }
-        Log::debug("あひる3");
         $posts2 = UsersPosts::ofUserPosts($user_id, $id)->first();
-		Log::debug($posts2->post_user_id."あひる3");
 		return $posts2;
 	}
 	
@@ -84,7 +80,6 @@ class PostController extends Controller
 		$posts = UsersPosts::ofPosts($user->user_id)->having('post_at', '<', $request->num)->orderBy('post_at', 'desc')->offset(0)->limit(25)->get();
 		
 		$posts = $posts->unique('posts_id')->values();
-		Log::debug($posts."ごみんわどぁｗｗｗｗ");
 		return $posts;
 	}
 	public function get_latest_posts (Request $request){
@@ -111,7 +106,6 @@ class PostController extends Controller
 		$posts = UsersPosts::parentPosts($user->user_id, $request->pearent)->offset($request->num)->limit(25)
         ->get();
 		$posts = $posts->unique('posts_id');
-        Log::debug($posts."あひる3");
 		return $posts;
 	}
     
