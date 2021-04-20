@@ -22,6 +22,7 @@ Route::group(["middleware" => "api"], function () {
     Route::get('/lists', 'Api\ListsController@index');
     Route::post('/lists', 'Api\ListsController@lists_insert');
     Route::post('/post', 'Api\PostController@post');
+    Route::post('/search/user', 'Api\SearchController@users_search');
     Route::get('/current_user', function () {
         return Auth::user();
     });

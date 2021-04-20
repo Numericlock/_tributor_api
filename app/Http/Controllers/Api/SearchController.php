@@ -1,7 +1,9 @@
 <?php
 
-namespace App\Http\Controllers;
 
+namespace App\Http\Controllers\api;
+
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Requests\searchRequest;
 use App\Models\User;
@@ -15,7 +17,7 @@ class SearchController extends Controller
 {
 	public function __construct(){
         // 作成したMiddlewareを呼び出し
-        $this->middleware('auth.before');
+       // $this->middleware('auth.before');
     }
 	public function search (Request $request){
 		$posts = "";
@@ -86,12 +88,15 @@ class SearchController extends Controller
 	}
 	
 	public function users_search (searchRequest $request){
-		$users = User::select('id as users_id','name as users_name')
+        $user_id = "hishida2";
+        Log::debug($user_id."さーちりくえすと");
+		$users = User::select('id as user_id','name as user_name')
 		->where('id', 'LIKE', $request->str."%")
+		->where('id','!=', $user_id)
 		->orWhere('name', 'LIKE', $request->str."%")	
-		->having('id','!=',$request->base_user->user_id)
+		->where('id','!=', $user_id)
 		->get();
-		Log::debug($users."さーちりくえすと");
+		
 		return $users;
 	}
 	
