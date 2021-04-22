@@ -47,30 +47,31 @@ class ListsController extends Controller
 
 		$list = new Disclosure_list;
 		$list -> name = $request->name;
-		$list -> owner_user_id = "hishida2";
+		$list -> owner_user_id = "hishida1";
 		$list -> is_published = $request->publish;
 		$list -> is_hidden = 0;
 		$list -> save();
 		$id = $list->id;
         
-        ////ヘッダに「data:image/png;base64,」が付いているので、それは外す
-        //$canvas = $request->icon;
-        //$canvas = preg_replace("/data:[^,]+,/i","",$canvas);
- //
- //       //残りのデータはbase64エンコードされているので、デコードする
- //       $canvas = base64_decode($canvas);
- //
- //       //まだ文字列の状態なので、画像リソース化
- //       $image = imagecreatefromstring($canvas);
- //
- //       //画像として保存（ディレクトリは任意）
- //       $savepath=$id;
- //       $path2 ='img/list_icon/';
- //       $path2 .=$savepath;
- //       $img_path =  self::unique_filename($path2);
- //       imagesavealpha($image, TRUE); // 透明色の有効
- //       imagepng($image ,$img_path);
-        
+        if($request->icon){
+            //ヘッダに「data:image/png;base64,」が付いているので、それは外す
+            $canvas = $request->icon;
+            $canvas = preg_replace("/data:[^,]+,/i","",$canvas);
+
+            //残りのデータはbase64エンコードされているので、デコードする
+            $canvas = base64_decode($canvas);
+
+            //まだ文字列の状態なので、画像リソース化
+            $image = imagecreatefromstring($canvas);
+
+            //画像として保存（ディレクトリは任意）
+            $savepath=$id;
+            $path2 ='img/list_icon/';
+            $path2 .=$savepath;
+            $img_path =  self::unique_filename($path2);
+            imagesavealpha($image, TRUE); // 透明色の有効
+            imagepng($image ,$img_path);
+        }
         foreach($request->users as $user){
             Disclosure_list_user::create([
                 'list_id'=> $id,
