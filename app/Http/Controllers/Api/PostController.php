@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\UsersPosts;
 use App\Models\Post_valid_disclosure_list;
+use App\Models\Disclosure_list_user;
 use App\Models\Attached_content;
 use App\Models\User_favorite;
 use App\Http\Requests\PostFormRequest;
@@ -74,10 +75,10 @@ class PostController extends Controller
         $posts2 = UsersPosts::ofUserPosts($user_id, $id)->first();
 		return $posts2;
 	}
-	
+
 	public function get_posts (Request $request){
 		$user = $request->base_user;
-		$posts = UsersPosts::ofPosts($user->user_id)->having('post_at', '<', $request->num)->orderBy('post_at', 'desc')->offset(0)->limit(25)->get();
+		$posts = UsersPosts::ofPosts($user->user_id)->having('post_at', '<', $request->num)->orderBy('post_at', 'desc')->distinct()->offset(0)->limit(25)->get();
 		
 		$posts = $posts->unique('posts_id')->values();
 		return $posts;
@@ -109,7 +110,7 @@ class PostController extends Controller
 		return $posts;
 	}
     
-    	private static function unique_filename($org_path, $num=0){
+    private static function unique_filename($org_path, $num=0){
 
 		if( $num > 0){
 			$info = pathinfo($org_path);

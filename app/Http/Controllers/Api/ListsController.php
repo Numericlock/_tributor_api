@@ -5,6 +5,7 @@ namespace App\Http\Controllers\api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\UsersPosts;
 use App\Models\UserSession;
 use App\Models\Disclosure_list;
 use App\Models\Disclosure_list_user;
@@ -40,6 +41,7 @@ class ListsController extends Controller
 //        /    //Log::debug("画像：".$base64_image);
 //        /    $list['icon'] = $base64_image;
 //        /}
+        
         return $lists;
 	}
 
@@ -158,25 +160,47 @@ class ListsController extends Controller
 	
 	
 	public function lists_member_post($id, Request $request){
-		$lists = $request->base_user_lists;
-		$user = $request->base_user;
-		//$id=$request->id;
+		//$lists = $request->base_user_lists;
+		//$user = $request->base_user;
+        $user_id="hishida1";
+		$id=$request->id;
 		$current_list = Disclosure_list::select('id as list_id','name','owner_user_id')
 		->where('id', $id)
 		->first();
-		if($current_list->owner_user_id == $request->base_user->user_id){
+		if($current_list->owner_user_id == $user_id){
 			$list_users = Disclosure_list_user::select('disclosure_lists_users.user_id as users_id', 'users.name as users_name')
 			->join('users', 'users.id', '=', 'disclosure_lists_users.user_id')
 			->where('disclosure_lists_users.list_id', $id)
 			->where('disclosure_lists_users.is_deleted', 0)
 			->get();
 			$count = $list_users->count();
-			return view('lists_members',compact('lists','user', 'current_list', 'list_users', 'count'));
-		}else{
-			return redirect('/lists');
-		}
+            
+            $posts = UsersPosts::ofListPosts($user_id);
+            //$posts->havingRaw(function ($posts) use ($list_users) {
+                $i = 0;
+                foreach ($list_users as $user) {
+                    Log::debug($user->users_id);
+                    if(!$i) $posts->where("users_share_posts.repost_user_id", "=" , $user->users_id);
+                    else $posts->orWhere("users_share_posts.repost_user_id", "=" ,$user->users_id);
+                    $i++;
+                }
+                $i = 0;
+                foreach ($list_users as $user) {
+                    Log::debug($user->users_id);
+                  //  if(!$i) $posts->havingRaw("users_posts.post_user_id = ".$user->users_id);
+                  //  else $posts->orHavingRaw("users_posts.post_user_id = ".$user->users_id);
+                    if(!$i) $posts->where("users_posts.post_user_id", "=" , $user->users_id);
+                    else $posts->orWhere("users_posts.post_user_id", "=" ,$user->users_id);
+                    $i++;
+                }
+           // });
+            $posts->orderBy('post_at', 'desc')->distinct()->offset(0)->limit(50)->get();
+            if(!$posts->count() == 0) $posts = $posts->unique('posts_id');
+            else $posts = false;
+			return compact('current_list', 'list_users', 'count', 'posts');
+		}else return false;
 	}
-	
+    
 	public function user_remove(Request $request){
 		$user_id=$request->user_id;
 		$list_id=$request->list_id;

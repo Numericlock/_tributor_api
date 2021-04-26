@@ -31,7 +31,7 @@ class HomeController extends Controller
         
 		$user_id = "hishida1";
 		$reposts = UsersSharePost::ofReposts($user_id)->latest()->get();
-		$posts = UsersPosts::ofPosts($user_id)->orderBy('post_at', 'desc')->offset(0)->limit(50)->get();
+		$posts = UsersPosts::ofPosts($user_id)->orderBy('post_at', 'desc')->distinct()->offset(0)->limit(50)->get();
        // Log::debug(UsersPosts::ofPosts($user_id)->orderBy('post_at', 'desc')->offset(0)->limit(25)->toSql());
 		/////$posts = $posts->merge($reposts);
 		////$posts = $posts->sortByDesc('share_at')

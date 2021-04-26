@@ -21,6 +21,7 @@ Route::group(["middleware" => "api"], function () {
     Route::post('/home/before', 'Api\HomeController@get_before_posts');
     Route::get('/lists', 'Api\ListsController@index');
     Route::post('/lists', 'Api\ListsController@lists_insert');
+    Route::get('/lists/{id}', 'Api\ListsController@lists_member_post');
     Route::post('/post', 'Api\PostController@post');
     Route::post('/search/user', 'Api\SearchController@users_search');
     Route::get('/current_user', function () {
