@@ -24,7 +24,7 @@ class UsersPosts extends Model
 		\DB::raw(//フォローされているかどうか
 			"(SELECT COUNT(followed_user_id = '$user_id' OR NULL) FROM `users_follows` WHERE subject_user_id = users.id AND is_canceled = 0) AS users_followed_count "
 		),
-		\DB::raw(//フォローされているかどうか
+		\DB::raw(//コメントの数
 			"(SELECT COUNT(*) FROM users_posts WHERE parent_post_id = posts_id AND is_deleted = 0) AS comment_count "
 		),
 		\DB::raw(//いいねの数
@@ -33,10 +33,10 @@ class UsersPosts extends Model
 		\DB::raw(//いいねしているかどうか
 			"(SELECT COUNT(*) FROM users_favorites WHERE post_id = posts_id AND is_canceled = 0 AND user_id = '$user_id') AS is_favorite "
 		),
-		\DB::raw(//いいねしているかどうか
+		\DB::raw(//リトリビュートしているかどうか
 			"(SELECT COUNT(*) FROM users_share_posts WHERE origin_post_id = posts_id AND is_deleted = 0 AND repost_user_id = '$user_id') AS is_retribute "
 		),
-		\DB::raw(//いいねしているかどうか
+		\DB::raw(//リトリビュートの数
 			"(SELECT COUNT(*) FROM users_share_posts WHERE origin_post_id = posts_id AND is_deleted = 0) AS retribute_count "
 		),
 		\DB::raw(//添付ファイルの数

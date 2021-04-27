@@ -55,18 +55,11 @@ class ListsController extends Controller
 		$list -> save();
 		$id = $list->id;
         
-        if($request->icon){
-            //ヘッダに「data:image/png;base64,」が付いているので、それは外す
+        if(!empty($request->icon)){
             $canvas = $request->icon;
             $canvas = preg_replace("/data:[^,]+,/i","",$canvas);
-
-            //残りのデータはbase64エンコードされているので、デコードする
             $canvas = base64_decode($canvas);
-
-            //まだ文字列の状態なので、画像リソース化
             $image = imagecreatefromstring($canvas);
-
-            //画像として保存（ディレクトリは任意）
             $savepath=$id;
             $path2 ='img/list_icon/';
             $path2 .=$savepath;
