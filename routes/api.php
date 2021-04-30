@@ -24,6 +24,10 @@ Route::group(["middleware" => "api"], function () {
     Route::get('/lists/{id}', 'Api\ListsController@lists_member_post');
     Route::post('/post', 'Api\PostController@post');
     Route::post('/search/user', 'Api\SearchController@users_search');
+    Route::post('/post/retribute', 'Api\RetributeController@retribute');
+    Route::post('/post/retribute/remove', 'Api\RetributeController@remove');
+    Route::post('/post/like', 'Api\FavoriteController@users_favorite');
+    Route::post('/post/like/remove', 'Api\FavoriteController@remove');
     Route::get('/current_user', function () {
         return Auth::user();
     });
