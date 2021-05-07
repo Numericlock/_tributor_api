@@ -75,6 +75,24 @@ class PostController extends Controller
         $posts2 = UsersPosts::ofUserPosts($user_id, $id)->first();
 		return $posts2;
 	}
+    
+    public function get_post_detail(Request $request){
+        $user_id = "hishida1";
+        $post_id = $request->id;
+        $post = UsersPosts::select('*')
+        ->leftjoin('posts_valid_disclosure_lists', 'users_posts.id', '=', 'posts_valid_disclosure_lists.post_id')
+        ->leftjoin('disclosure_lists_users', 'posts_valid_disclosure_lists.list_id', '=', 'disclosure_lists_users.list_id')
+        ->leftjoin('users_share_posts', 'users_share_posts.origin_post_id', '=', 'users_posts.id')
+        ->where('disclosure_lists_users.user_id', '=', $user_id)
+        ->orWhereRaw('disclosure_lists_users.user_id IS NULL')
+        ->orWhereRaw('users_share_posts.origin_post_id IS NOT NULL')
+        ->where('users_share_posts.is_deleted', '=', '0' )
+        ->groupBy('users_posts.id')
+        ->having('users_posts.id', '=', $post_id)
+        ->get();
+        $post = $post->first();
+        return $post;
+    }
 
 	public function get_posts (Request $request){
 		$user = $request->base_user;

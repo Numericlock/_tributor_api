@@ -23,6 +23,7 @@ Route::group(["middleware" => "api"], function () {
     Route::post('/lists', 'Api\ListsController@lists_insert');
     Route::get('/lists/{id}', 'Api\ListsController@lists_member_post');
     Route::post('/post', 'Api\PostController@post');
+    Route::get('/post/{id}', 'Api\PostController@get_post_detail');
     Route::post('/search/user', 'Api\SearchController@users_search');
     Route::post('/post/retribute', 'Api\RetributeController@retribute');
     Route::post('/post/retribute/remove', 'Api\RetributeController@remove');
