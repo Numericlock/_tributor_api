@@ -30,8 +30,8 @@ class HomeController extends Controller
       //  
         
 		$user_id = "hishida1";
-		$reposts = UsersSharePost::ofReposts($user_id)->latest()->get();
-		$posts = UsersPosts::ofPosts($user_id)->orderBy('post_at', 'desc')->distinct()->offset(0)->limit(50)->get();
+		//$reposts = UsersSharePost::ofReposts($user_id)->latest()->get();
+		$posts = UsersPosts::posts($user_id)->ofTimeline($user_id)->orderBy('post_at', 'desc')->distinct()->offset(0)->limit(50)->get();
 		$posts = $posts->unique('posts_id');
 		$start_post = $posts->first();
 		$last_post = $posts->last();
@@ -47,7 +47,6 @@ class HomeController extends Controller
 		$start_post = $posts->first();
 		$last_post = $posts->last();
         $userIds = $posts->unique('users_id'); 
-		Log::debug($posts."ごみんわどぁｗｗｗｗ");
         //return compact('posts', 'start_post', 'last_post', 'userIds');
         return response()->json(['posts' => $posts,'start_post' => $start_post, 'last_post' => $last_post, 'userIds' => $userIds]);
 	}

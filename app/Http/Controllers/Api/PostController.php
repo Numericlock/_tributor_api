@@ -79,19 +79,9 @@ class PostController extends Controller
     public function get_post_detail(Request $request){
         $user_id = "hishida1";
         $post_id = $request->id;
-        $post = UsersPosts::select('*')
-        ->leftjoin('posts_valid_disclosure_lists', 'users_posts.id', '=', 'posts_valid_disclosure_lists.post_id')
-        ->leftjoin('disclosure_lists_users', 'posts_valid_disclosure_lists.list_id', '=', 'disclosure_lists_users.list_id')
-        ->leftjoin('users_share_posts', 'users_share_posts.origin_post_id', '=', 'users_posts.id')
-        ->where('disclosure_lists_users.user_id', '=', $user_id)
-        ->orWhereRaw('disclosure_lists_users.user_id IS NULL')
-        ->orWhereRaw('users_share_posts.origin_post_id IS NOT NULL')
-        ->where('users_share_posts.is_deleted', '=', '0' )
-        ->groupBy('users_posts.id')
-        ->having('users_posts.id', '=', $post_id)
-        ->get();
-        $post = $post->first();
-        return $post;
+        $post = UsersPosts::posts($user_id)->ofParent($user_id,$post_id)->limit(1)->firstOrFail();
+        $child_posts = UsersPosts::posts($user_id)->ofChild($user_id,$post_id)->get();
+        return compact('post','child_posts');
     }
 
 	public function get_posts (Request $request){
