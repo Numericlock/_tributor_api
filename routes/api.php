@@ -13,9 +13,18 @@ use Illuminate\Http\Request;
 |
 */
 
+Route::post('login', 'Api\UserController@login');
+Route::post('register', 'Api\UserController@register');
+
+// 下記のgroupの下には認証が必要
+Route::group(['middleware' => 'auth:api'], function(){
+    Route::post('details', 'Api\UserController@details');
+});
+
+
 Route::group(["middleware" => "api"], function () {
-    Route::post('/login', 'Auth\LoginController@login');
-    Route::post('/register', 'Auth\RegisterController@register');
+    //Route::post('/login', 'Auth\LoginController@login');
+    //Route::post('/register', 'Auth\RegisterController@register');
    // Route::post('/logout', 'Auth\LoginController@loggedOut');
     Route::get('/home', 'Api\HomeController@home');
     Route::post('/home/before', 'Api\HomeController@get_before_posts');
@@ -37,3 +46,4 @@ Route::group(["middleware" => "api"], function () {
     Route::middleware('auth:api')->group(function() {
     });
 });
+

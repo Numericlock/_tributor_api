@@ -1,70 +1,57 @@
 <?php
 
-namespace App\Http\Controllers\Api;
-
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-//追加
-use Illuminate\Support\Facades\Hash;
-use App\Models\User;
+namespace App\Http\Controllers\API;
+use Illuminate\Http\Request; 
+use App\Http\Controllers\Controller; 
+use App\Models\User; 
+use Illuminate\Support\Facades\Auth; 
+use Validator;
+use Log;
 
 class UserController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //追加
-        return User::all();
+    public $successStatus = 200;
+    //
+/** 
+     * Register api 
+     * 
+     * @return \Illuminate\Http\Response 
+     */ 
+    public function register(Request $request) 
+    { 
+        $validator = Validator::make($request->all(), [
+            'name' => 'required', 
+            'email' => 'required|email', 
+            'password' => 'required', 
+            'c_password' => 'required|same:password', 
+        ]);
+        if ($validator->fails()) {
+            return response()->json(['error'=>$validator->errors()], 401);            
+        }
+        $input = $request->all(); 
+        $input['password'] = bcrypt($input['password']); 
+        $user = User::create($input); 
+        //$user = User::create(['name' => $input['name']],['email' => $input['email']],['password' => $input['password']]); 
+        Log::debug($user);
+        $success['token'] =  $user->createToken('MyApp')-> accessToken; 
+        $success['name'] =  $user->name;
+        return response()->json(['success'=>$success], $this-> successStatus); 
     }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //追加
-        $user = new User;
-        $user->fill(array_merge(
-            $request->all(), ['password' => Hash::make($request->password)]
-        ))->save();
-        return $user;
+    
+    public function login(){
+        if(Auth::attempt(['email' => request('email'), 'password' => request('password')])){ 
+            $user = Auth::user(); 
+            $success['token'] =  $user->createToken('MyApp')-> accessToken; 
+            return response()->json(['success' => $success], $this-> successStatus); 
+        } 
+        else{ 
+            return response()->json(['error'=>'Unauthorised'], 401); 
+        } 
     }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //追加
-        $user = User::find($id);
-        $user->fill(array_merge(
-            $request->all(), ['password' => Hash::make($request->password)]
-        ))->save();
-        return $user;
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //追加
-        $user = User::find($id);
-        $user->delete();
-        return $user;
-    }
+    
+    public function details() 
+    { 
+        $user = Auth::user(); 
+        return response()->json(['success' => $user], $this-> successStatus); 
+    } 
 }
