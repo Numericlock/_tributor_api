@@ -19,14 +19,7 @@ Route::post('register', 'Api\UserController@register');
 // 下記のgroupの下には認証が必要
 Route::group(['middleware' => 'auth:api'], function(){
     Route::post('details', 'Api\UserController@details');
-});
-
-
-Route::group(["middleware" => "api"], function () {
-    //Route::post('/login', 'Auth\LoginController@login');
-    //Route::post('/register', 'Auth\RegisterController@register');
-   // Route::post('/logout', 'Auth\LoginController@loggedOut');
-    Route::get('/home', 'Api\HomeController@home');
+    Route::post('/home', 'Api\HomeController@home');
     Route::post('/home/before', 'Api\HomeController@get_before_posts');
     Route::get('/lists', 'Api\ListsController@index');
     Route::post('/lists', 'Api\ListsController@lists_insert');
@@ -38,6 +31,15 @@ Route::group(["middleware" => "api"], function () {
     Route::post('/post/retribute/remove', 'Api\RetributeController@remove');
     Route::post('/post/like', 'Api\FavoriteController@users_favorite');
     Route::post('/post/like/remove', 'Api\FavoriteController@remove');
+});
+
+
+Route::group(["middleware" => "api"], function () {
+    //Route::post('/login', 'Auth\LoginController@login');
+    //Route::post('/register', 'Auth\RegisterController@register');
+   // Route::post('/logout', 'Auth\LoginController@loggedOut');
+    
+
     Route::get('/current_user', function () {
         return Auth::user();
     });
