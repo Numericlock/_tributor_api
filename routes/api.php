@@ -15,6 +15,8 @@ use Illuminate\Http\Request;
 
 Route::post('login', 'Api\UserController@login');
 Route::post('register', 'Api\UserController@register');
+Route::post('exists/email', 'Api\UserController@email_exists');
+Route::post('exists/user_id', 'Api\UserController@user_id_exists');
 
 // 下記のgroupの下には認証が必要
 Route::group(['middleware' => 'auth:api'], function(){
