@@ -4,6 +4,7 @@ namespace App\Http\Controllers\api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth; 
 use App\Models\UsersSharePost;
 use Log;
 
@@ -17,7 +18,8 @@ class RetributeController extends Controller
 	
 	public function retribute (Request $request){
 		Log::debug($request->post_id);
-        $user_id = "hishida1";
+        $user = Auth::user(); 
+		$user_id = $user->id;
         $post_id = $request->post_id;
 		$count = UsersSharePost::where('repost_user_id', $user_id)->where('origin_post_id', $post_id)->count();
 		if($count == 0){
@@ -33,7 +35,8 @@ class RetributeController extends Controller
 	}
 	
     public function remove (Request $request){
-        $user_id = "hishida1";
+        $user = Auth::user(); 
+		$user_id = $user->id;
         $post_id = $request->post_id;
 		$user = $request->base_user;
 		Log::debug($post_id."wadwa");

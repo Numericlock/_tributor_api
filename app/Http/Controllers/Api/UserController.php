@@ -52,7 +52,7 @@ class UserController extends Controller
         $validator = Validator::make($request->all(), [
             'user_id' => 'required'
         ]);
-        $count = User::where('user_id', $input['user_id'])->count();
+        $count = User::where('user_id', $request->user_id)->count();
         return $count ? true : false;
     }
     
