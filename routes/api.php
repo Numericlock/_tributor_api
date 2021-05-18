@@ -19,6 +19,7 @@ Route::group(["middleware" => "api"], function () {
    // Route::post('/logout', 'Auth\LoginController@loggedOut');
     Route::get('/home', 'Api\HomeController@home');
     Route::post('/home/before', 'Api\HomeController@get_before_posts');
+    Route::get('/profile/{id}', 'Api\ProfileController@profile');
     Route::get('/lists', 'Api\ListsController@index');
     Route::post('/lists', 'Api\ListsController@lists_insert');
     Route::get('/lists/{id}', 'Api\ListsController@lists_member_post');

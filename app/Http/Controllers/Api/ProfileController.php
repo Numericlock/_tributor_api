@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\api;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\User_follow;
@@ -18,13 +19,13 @@ class ProfileController extends Controller
     public function __construct()
     {
         // 作成したMiddlewareを呼び出し
-        $this->middleware('auth.before');
+        //$this->middleware('auth.before');
     }
 	
 	public function profile ($user_id, Request $request){
-		$user = $request->base_user;
-		$base_user_id =$user->user_id;
-		$posts = User::select('users.id as user_id','users.name as name','users.introduction as introduction','users_follows.is_canceled as is_canceled', 'users_follows.subject_user_id as subject_user_id',
+        $user = Auth::user(); 
+		$base_user_id = $user->id;
+		$profile = User::select('users.user_id as user_id','users.name as name','users.summary as summary','users_follows.is_canceled as is_canceled', 'users_follows.subject_user_id as subject_user_id',
 		\DB::raw(//フォロー数
 			"(SELECT COUNT(subject_user_id = users.id  OR NULL) AS subject_count FROM users_follows) AS subject_count "
 		),
@@ -39,10 +40,9 @@ class ProfileController extends Controller
 		)
 		)
 		->leftjoin('users_follows', 'users_follows.followed_user_id', '=', 'users.id')
-		->leftjoin('users_posts', 'users_posts.post_user_id', '=', 'users.id')
-		->where('users.id',$user_id)
-		->get();
-		$current_user = $posts->first();
+		//->leftjoin('users_posts', 'users_posts.post_user_id', '=', 'users.id')
+		->where('users.user_id',$user_id)
+		->firstOrFail();
         
 		$reposts = UsersSharePost::ofReposts($user_id)->latest()->get();
 		$myPosts = UsersPosts::MyPosts($base_user_id,$user_id)->orderBy('post_at', 'desc')->offset(0)->limit(25)->get();
@@ -54,7 +54,7 @@ class ProfileController extends Controller
         $imgPosts = $imgPosts->unique('posts_id');
         $userIdsimg = $imgPosts->unique('users_id');
 		$lists = $request->base_user_lists;
-		return view('profile',compact('current_user','myPosts','userIdsimg','imgPosts', 'start_post', 'last_post', 'userIds', 'user','lists'));
+		return compact('profile','myPosts','userIdsimg','imgPosts', 'start_post', 'last_post', 'userIds', 'user','lists');
 
 		
 	}
