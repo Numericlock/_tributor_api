@@ -4,6 +4,7 @@ namespace App\Http\Controllers\api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth; 
 use App\Models\UsersPosts;
 use App\Models\Post_valid_disclosure_list;
 use App\Models\Disclosure_list_user;
@@ -23,7 +24,8 @@ class PostController extends Controller
 	public function post (PostFormRequest $request){
 		$post = new UsersPosts;
 		//$post -> post_user_id = $request->base_user->user_id;
-        $user_id = "hishida1";
+        $user = Auth::user(); 
+		$user_id = $user->id;
 		$post -> post_user_id = $user_id;
 		$post -> content_text = $request->content_text;
 		if($request->attached_files && !$request->content_text) $post -> content_text = "";
@@ -77,7 +79,8 @@ class PostController extends Controller
 	}
     
     public function get_post_detail(Request $request){
-        $user_id = "hishida1";
+        $user = Auth::user(); 
+		$user_id = $user->id;
         $post_id = $request->id;
         $post = UsersPosts::posts($user_id)->ofParent($user_id,$post_id)->limit(1)->firstOrFail();
         $child_posts = UsersPosts::posts($user_id)->ofChild($user_id,$post_id)->get();

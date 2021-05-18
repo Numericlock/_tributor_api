@@ -13,11 +13,15 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::group(["middleware" => "api"], function () {
-    Route::post('/login', 'Auth\LoginController@login');
-    Route::post('/register', 'Auth\RegisterController@register');
-   // Route::post('/logout', 'Auth\LoginController@loggedOut');
-    Route::get('/home', 'Api\HomeController@home');
+Route::post('login', 'Api\UserController@login');
+Route::post('register', 'Api\UserController@register');
+Route::post('exists/email', 'Api\UserController@email_exists');
+Route::post('exists/user_id', 'Api\UserController@user_id_exists');
+
+// 下記のgroupの下には認証が必要
+Route::group(['middleware' => 'auth:api'], function(){
+    Route::post('details', 'Api\UserController@details');
+    Route::post('/home', 'Api\HomeController@home');
     Route::post('/home/before', 'Api\HomeController@get_before_posts');
     Route::get('/profile/{id}', 'Api\ProfileController@profile');
     Route::get('/lists', 'Api\ListsController@index');
@@ -30,6 +34,15 @@ Route::group(["middleware" => "api"], function () {
     Route::post('/post/retribute/remove', 'Api\RetributeController@remove');
     Route::post('/post/like', 'Api\FavoriteController@users_favorite');
     Route::post('/post/like/remove', 'Api\FavoriteController@remove');
+});
+
+
+Route::group(["middleware" => "api"], function () {
+    //Route::post('/login', 'Auth\LoginController@login');
+    //Route::post('/register', 'Auth\RegisterController@register');
+   // Route::post('/logout', 'Auth\LoginController@loggedOut');
+    
+
     Route::get('/current_user', function () {
         return Auth::user();
     });
@@ -38,3 +51,4 @@ Route::group(["middleware" => "api"], function () {
     Route::middleware('auth:api')->group(function() {
     });
 });
+

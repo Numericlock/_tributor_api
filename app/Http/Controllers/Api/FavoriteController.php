@@ -4,6 +4,7 @@ namespace App\Http\Controllers\api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth; 
 use App\Models\User_favorite;
 use Log;
 
@@ -16,8 +17,8 @@ class FavoriteController extends Controller
 	
 	
 	public function users_favorite (Request $request){
-		Log::debug($request->post_id);
-        $user_id = "hishida1";
+        $user = Auth::user(); 
+		$user_id = $user->id;
         $post_id = $request->post_id;
         //$request->base_user->user_id
 		$count = User_favorite::where('user_id', $user_id)->where('post_id', $post_id)->count();
@@ -34,7 +35,8 @@ class FavoriteController extends Controller
 	}
 	
     public function remove (Request $request){
-        $user_id = "hishida1";
+        $user = Auth::user(); 
+		$user_id = $user->id;
         $post_id = $request->post_id;
 		User_favorite::where('user_id', $user_id)->where('post_id', $post_id)->update(['is_canceled'=> 1]);
 		return;

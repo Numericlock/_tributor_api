@@ -4,6 +4,7 @@ namespace App\Http\Controllers\api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth; 
 use App\Models\User;
 use App\Models\UsersPosts;
 use App\Models\UserSession;
@@ -27,7 +28,8 @@ class ListsController extends Controller
 		//$user = $request->base_user;
 		//$lists = $request->base_user_lists;
 		//return view('lists',compact('user','lists'));
-        $user_id = "hishida1";
+        $user = Auth::user(); 
+		$user_id = $user->id;
         $lists = Disclosure_list::index($user_id);
         //$image = File::get(public_path().'/img/list_icon/1.png');
         //$base64_image = base64_encode($image);
