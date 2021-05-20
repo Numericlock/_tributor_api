@@ -10,19 +10,19 @@ class UsersPosts extends Model
 	protected $fillable = ['post_user_id', 'content_text', 'parent_post_id', 'is_deleted', 'longitude', 'latitude'];
 	
 	public function scopePosts($query,$user_id){
-		return $query->select('users_posts.*','users_posts.id as posts_id', 'users_archive.id as users2_id', 'users2.name as users2_name', 'users_archive.id as users_id', 'users_archive.name as users_name', 'users_follows.subject_user_id as subject_user_id','users_follows.is_canceled as is_canceled','users_share_posts.updated_at as share_at',
+		return $query->select('users_posts.*','users_posts.id as posts_id', 'users.id as users2_id', 'users2.name as users2_name', 'users.user_id as user_id', 'users.name as users_name', 'users_follows.subject_user_id as subject_user_id','users_follows.is_canceled as is_canceled','users_share_posts.updated_at as share_at',
 		\DB::raw(//リツイートかどうか
 			"CASE WHEN users_follows2.subject_user_id != '$user_id' OR users_follows2.is_canceled = 1 OR users_share_posts.updated_at IS NULL OR users_share_posts.is_deleted = 1 OR users_share_posts.repost_user_id = '$user_id' OR users_posts.post_user_id = '$user_id' THEN users_posts.created_at ELSE users_share_posts.updated_at END AS post_at"
 			//"COALESCE(users_share_posts.updated_at, users_posts.created_at) as post_at"
 		),
 		\DB::raw(//フォロー数
-			"(SELECT COUNT(subject_user_id = users_archive.id  OR NULL) AS subject_count FROM users_follows) AS subject_count "
+			"(SELECT COUNT(subject_user_id = users.id  OR NULL) AS subject_count FROM users_follows) AS subject_count "
 		),
 		\DB::raw(//フォロワー数
-			"(SELECT COUNT(*) FROM users_follows WHERE followed_user_id = users_archive.id) AS followed_count "
+			"(SELECT COUNT(*) FROM users_follows WHERE followed_user_id = users.id) AS followed_count "
 		),
 		\DB::raw(//フォローされているかどうか
-			"(SELECT COUNT(followed_user_id = '$user_id' OR NULL) FROM `users_follows` WHERE subject_user_id = users_archive.id AND is_canceled = 0) AS users_followed_count "
+			"(SELECT COUNT(followed_user_id = '$user_id' OR NULL) FROM `users_follows` WHERE subject_user_id = users.id AND is_canceled = 0) AS users_followed_count "
 		),
 		\DB::raw(//コメントの数
 			"(SELECT COUNT(*) FROM users_posts WHERE parent_post_id = posts_id AND is_deleted = 0) AS comment_count "
@@ -48,8 +48,8 @@ class UsersPosts extends Model
 		->leftjoin('users_share_posts', 'users_posts.id', '=', 'users_share_posts.origin_post_id')
 		->leftjoin('users_follows', 'users_follows.followed_user_id', '=', 'users_posts.post_user_id')
 		->leftjoin('users_follows as users_follows2', 'users_follows2.followed_user_id', '=', 'users_share_posts.repost_user_id')
-        ->leftjoin('users_archive', 'users_posts.post_user_id', '=', 'users_archive.id')
-        ->leftjoin('users_archive as users2', 'users_share_posts.repost_user_id', '=', 'users2.id')
+        ->leftjoin('users', 'users_posts.post_user_id', '=', 'users.id')
+        ->leftjoin('users as users2', 'users_share_posts.repost_user_id', '=', 'users2.id')
 		->leftjoin('disclosure_lists_users', 'disclosure_lists_users.list_id', '=', 'posts_valid_disclosure_lists.list_id');
 	}
     
@@ -115,19 +115,19 @@ class UsersPosts extends Model
     
     
 	public function scopeOfPosts($query,$user_id){
-		return $query->select('users_posts.*','users_posts.id as posts_id', 'users2.id as users2_id', 'users2.name as users2_name', 'users_archive.id as users_id', 'users_archive.name as users_name', 'users_follows.subject_user_id as subject_user_id','users_follows.is_canceled as is_canceled','users_share_posts.updated_at as share_at',
+		return $query->select('users_posts.*','users_posts.id as posts_id', 'users2.id as users2_id', 'users2.name as users2_name', 'users.id as users_id', 'users.name as users_name', 'users_follows.subject_user_id as subject_user_id','users_follows.is_canceled as is_canceled','users_share_posts.updated_at as share_at',
 		\DB::raw(//リツイートかどうか
 			"CASE WHEN users_follows2.subject_user_id != '$user_id' OR users_follows2.is_canceled = 1 OR users_share_posts.updated_at IS NULL OR users_share_posts.is_deleted = 1 OR users_share_posts.repost_user_id = '$user_id' OR users_posts.post_user_id = '$user_id' THEN users_posts.created_at ELSE users_share_posts.updated_at END AS post_at"
 			//"COALESCE(users_share_posts.updated_at, users_posts.created_at) as post_at"
 		),
 		\DB::raw(//フォロー数
-			"(SELECT COUNT(subject_user_id = users_archive.id  OR NULL) AS subject_count FROM users_follows) AS subject_count "
+			"(SELECT COUNT(subject_user_id = users.id  OR NULL) AS subject_count FROM users_follows) AS subject_count "
 		),
 		\DB::raw(//フォロワー数
-			"(SELECT COUNT(*) FROM users_follows WHERE followed_user_id = users_archive.id) AS followed_count "
+			"(SELECT COUNT(*) FROM users_follows WHERE followed_user_id = users.id) AS followed_count "
 		),
 		\DB::raw(//フォローされているかどうか
-			"(SELECT COUNT(followed_user_id = '$user_id' OR NULL) FROM `users_follows` WHERE subject_user_id = users_archive.id AND is_canceled = 0) AS users_followed_count "
+			"(SELECT COUNT(followed_user_id = '$user_id' OR NULL) FROM `users_follows` WHERE subject_user_id = users.id AND is_canceled = 0) AS users_followed_count "
 		),
 		\DB::raw(//コメントの数
 			"(SELECT COUNT(*) FROM users_posts WHERE parent_post_id = posts_id AND is_deleted = 0) AS comment_count "
@@ -153,8 +153,8 @@ class UsersPosts extends Model
 		->leftjoin('users_share_posts', 'users_posts.id', '=', 'users_share_posts.origin_post_id')
 		->leftjoin('users_follows', 'users_follows.followed_user_id', '=', 'users_posts.post_user_id')
 		->leftjoin('users_follows as users_follows2', 'users_follows2.followed_user_id', '=', 'users_share_posts.repost_user_id')
-        ->leftjoin('users_archive', 'users_posts.post_user_id', '=', 'users_archive.id')
-        ->leftjoin('users_archive as users2', 'users_share_posts.repost_user_id', '=', 'users2.id')
+        ->leftjoin('users', 'users_posts.post_user_id', '=', 'users.id')
+        ->leftjoin('users as users2', 'users_share_posts.repost_user_id', '=', 'users2.id')
 		->leftjoin('disclosure_lists_users', 'disclosure_lists_users.list_id', '=', 'posts_valid_disclosure_lists.list_id')
 		->where('users_follows.subject_user_id',$user_id)
 		->where('disclosure_lists_users.user_id',$user_id)
