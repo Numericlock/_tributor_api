@@ -34,29 +34,57 @@ class ProfileController extends Controller
 			"(SELECT COUNT(*) FROM users_follows WHERE followed_user_id = users.id) AS followed_count "
 		),
 		\DB::raw(//フォローされているかどうか
-			"(SELECT COUNT(followed_user_id = '$base_user_id' OR NULL) FROM `users_follows` WHERE subject_user_id = '$user_id' AND is_canceled = 0) AS users_followed_count "
+			"(SELECT COUNT(followed_user_id = '$base_user_id' OR NULL) FROM `users_follows` WHERE subject_user_id = users.id AND is_canceled = 0) AS users_followed_count "
 		),
 		\DB::raw(//フォローしているかどうか
-			"(SELECT COUNT(subject_user_id = '$base_user_id' OR NULL) FROM `users_follows` WHERE followed_user_id = '$user_id' AND is_canceled = 0) AS users_subject_count "
+			"(SELECT COUNT(subject_user_id = '$base_user_id' OR NULL) FROM `users_follows` WHERE followed_user_id = users.id AND is_canceled = 0) AS users_subject_count "
 		)
 		)
 		->leftjoin('users_follows', 'users_follows.followed_user_id', '=', 'users.id')
 		//->leftjoin('users_posts', 'users_posts.post_user_id', '=', 'users.id')
 		->where('users.user_id',$user_id)
 		->firstOrFail();
-        
-		$reposts = UsersSharePost::ofReposts($user_id)->latest()->get();
-		$myPosts = UsersPosts::MyPosts($base_user_id,$user_id)->orderBy('post_at', 'desc')->offset(0)->limit(25)->get();
-        $imgPosts = UsersPosts::MyPosts($base_user_id,$user_id)->having('attached_count','>',0)->orderBy('post_at', 'desc')->offset(0)->limit(25)->get();
-		$myPosts = $myPosts->unique('posts_id');
-		$start_post = $myPosts->first();
-		$last_post = $myPosts->last();
-        $userIds = $myPosts->unique('users_id');
-        $imgPosts = $imgPosts->unique('posts_id');
-        $userIdsimg = $imgPosts->unique('users_id');
-		$lists = $request->base_user_lists;
-		return compact('profile','myPosts','userIdsimg','imgPosts', 'start_post', 'last_post', 'userIds', 'user','lists');
+        //$user_id = User::select('id')->where('user_id',$user_id)->firstOrFail();
+		//$reposts = UsersSharePost::ofReposts($user_id->id)->latest()->get();
+		//$myPosts = UsersPosts::MyPosts($base_user_id,$user_id->id)->orderBy('post_at', 'desc')->offset(0)->limit(25)->get();
+        //$imgPosts = UsersPosts::MyPosts($base_user_id,$user_id->id)->having('attached_count','>',0)->orderBy('post_at', 'desc')->offset(0)->limit(25)->get();
+		//$myPosts = $myPosts->unique('posts_id');
+		//$start_post = $myPosts->first();
+		//$last_post = $myPosts->last();
+        //$userIds = $myPosts->unique('users_id');
+        //$imgPosts = $imgPosts->unique('posts_id');
+       // $userIdsimg = $imgPosts->unique('users_id');
+		return $profile;
 
 		
 	}
+    public function user_posts($user_id, Request $request){
+        $user = Auth::user(); 
+		$base_user_id = $user->id;
+        $user_id = User::select('id')->where('user_id',$user_id)->firstOrFail();
+       // $myPosts = UsersPosts::MyPosts($base_user_id,$user_id->id)->orderBy('post_at', 'desc')->offset(0)->limit(25)->get();
+        $myPosts = UsersPosts::Posts($base_user_id)->ofUser($base_user_id,$user_id->id)->orderBy('post_at', 'desc')->offset(0)->limit(25)->get();
+		$myPosts = $myPosts->unique('posts_id');
+		$start_post = $myPosts->first();
+		$last_post = $myPosts->last();
+        return $myPosts;   
+    }    
+    
+    public function user_media_posts($user_id, Request $request){
+        $user = Auth::user(); 
+		$base_user_id = $user->id;
+        $user_id = User::select('id')->where('user_id',$user_id)->firstOrFail();
+        $imgPosts = UsersPosts::Posts($base_user_id)->ofUser($base_user_id,$user_id->id)->having('attached_count','>',0)->orderBy('post_at', 'desc')->offset(0)->limit(25)->get();
+        $imgPosts = $imgPosts->unique('posts_id');
+        return $imgPosts;   
+    }    
+    
+    public function user_reply_posts($user_id, Request $request){
+        $user = Auth::user(); 
+		$base_user_id = $user->id;
+        $user_id = User::select('id')->where('user_id',$user_id)->firstOrFail();
+        $replyPosts = UsersPosts::Posts($base_user_id)->ofUserReply($base_user_id,$user_id->id)->having('attached_count','>',0)->orderBy('post_at', 'desc')->offset(0)->limit(25)->get();
+        $replyPosts = $replyPosts->unique('posts_id');
+        return $replyPosts;   
+    }
 }

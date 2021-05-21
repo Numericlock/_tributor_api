@@ -24,6 +24,9 @@ Route::group(['middleware' => 'auth:api'], function(){
     Route::post('/home', 'Api\HomeController@home');
     Route::post('/home/before', 'Api\HomeController@get_before_posts');
     Route::get('/profile/{id}', 'Api\ProfileController@profile');
+    Route::get('/profile/posts/{id}', 'Api\ProfileController@user_posts');
+    Route::get('/profile/media/{id}', 'Api\ProfileController@user_media_posts');
+    Route::get('/profile/reply/{id}', 'Api\ProfileController@user_reply_posts');
     Route::get('/lists', 'Api\ListsController@index');
     Route::post('/lists', 'Api\ListsController@lists_insert');
     Route::get('/lists/{id}', 'Api\ListsController@lists_member_post');
