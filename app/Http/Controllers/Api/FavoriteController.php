@@ -5,7 +5,7 @@ namespace App\Http\Controllers\api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth; 
-use App\Models\User_favorite;
+use App\Models\UserFavorite;
 use Log;
 
 class FavoriteController extends Controller
@@ -21,15 +21,15 @@ class FavoriteController extends Controller
 		$user_id = $user->id;
         $post_id = $request->post_id;
         //$request->base_user->user_id
-		$count = User_favorite::where('user_id', $user_id)->where('post_id', $post_id)->count();
+		$count = UserFavorite::where('user_id', $user_id)->where('post_id', $post_id)->count();
 		if($count == 0){
-			User_favorite::create([
+			UserFavorite::create([
 				'user_id'=>$user_id,
 				'post_id'=>$post_id,
 				'is_canceled'=>0
 			]);	
 		}elseif($count == 1){
-			User_favorite::where('user_id', $user_id)->where('post_id', $post_id)->update(['is_canceled'=> 0]);
+			UserFavorite::where('user_id', $user_id)->where('post_id', $post_id)->update(['is_canceled'=> 0]);
 		}
 		return $count;
 	}
@@ -38,7 +38,7 @@ class FavoriteController extends Controller
         $user = Auth::user(); 
 		$user_id = $user->id;
         $post_id = $request->post_id;
-		User_favorite::where('user_id', $user_id)->where('post_id', $post_id)->update(['is_canceled'=> 1]);
+		UserFavorite::where('user_id', $user_id)->where('post_id', $post_id)->update(['is_canceled'=> 1]);
 		return;
 	}
 }

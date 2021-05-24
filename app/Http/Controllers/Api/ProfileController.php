@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Models\User_follow;
 use App\Models\UsersPosts;
+use App\Models\UserFavorite;
 use App\Models\UsersSharePost;
 use App\Models\Post_valid_disclosure_list;
 use App\Models\Disclosure_list;
@@ -86,5 +87,15 @@ class ProfileController extends Controller
         $replyPosts = UsersPosts::Posts($base_user_id)->ofUserReply($base_user_id,$user_id->id)->having('attached_count','>',0)->orderBy('post_at', 'desc')->offset(0)->limit(25)->get();
         $replyPosts = $replyPosts->unique('posts_id');
         return $replyPosts;   
+    }
+    
+    public function user_like_posts($user_id, Request $request){
+        $user = Auth::user(); 
+		$base_user_id = $user->id;
+        $user_id = User::select('id')->where('user_id',$user_id)->firstOrFail();
+        $likePosts = UserFavorite::Posts($base_user_id)->ofUser($user_id->id)->orderBy('post_at', 'desc')->offset(0)->limit(25)->get();
+        $likePosts = $likePosts->unique('posts_id');
+        Log::debug($likePosts);
+        return $likePosts;   
     }
 }

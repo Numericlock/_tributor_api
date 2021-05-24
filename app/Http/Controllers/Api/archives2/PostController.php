@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\UserPosts;
 use App\Models\Post_valid_disclosure_list;
 use App\Models\Attached_content;
-use App\Models\User_favorite;
+use App\Models\UserFavorite;
 use App\Http\Requests\PostFormRequest;
 use Log;
 
